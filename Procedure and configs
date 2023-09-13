@@ -21,8 +21,16 @@ sudo named-checkconf /etc/named.conf
 sudo named-checkconf /etc/named/ipa-ext.conf
 
 
+## allow dynamic update 
+ipa dnszone-mod prv.local --dynamic-update=TRUE
+
+## same for reverse
+ipa dnszone-mod 199.168.192.in-addr.arpa. --dynamic-update=TRUE
+
+
 ## Restart FreeIPA
 sudo ipactl restart
+ 
 
 ## Grant permission for the key (for DNS updates) >>> if you recive ipa: ERROR: Ticket expired launch this command: kinti admin 
 ipa dnszone-mod prv.local --dynamic-update=True --update-policy='grant PRV.LOCAL krb5-self * A; grant PRV.LOCAL krb5-self * AAAA; grant PRV.LOCAL krb5-self * SSHFP; grant "rndc-key" zonesub ANY;'
