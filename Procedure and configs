@@ -1,0 +1,28 @@
+# FreeIPA server: 192.168.199.200 
+
+#Create a DNS forward zone and a revers zone using FreeIPA web GUI
+#I'm using prv.local for the forward zone and 199.168.192.in-addr.arpa.
+
+## Create the key
+sudo rndc-confgen -a -b 512
+
+## Instead of modifying named.conf, for newer versions of FreeIPA, modify ipa-ext.conf by adding the key file: include "/etc/rndc.key";
+sudo vim /etc/named/ipa-ext.conf
+
+## past this in the file just opened
+include "/etc/rndc.key";
+
+## Check the configuration
+sudo named-checkconf /etc/named.conf
+sudo named-checkconf /etc/named/ipa-ext.conf
+
+
+## Restart FreeIPA
+sudo ipactl restart
+
+## Grant permission for the key (for DNS updates) >>> if you recive ipa: ERROR: Ticket expired launch this command: kinti admin 
+ipa dnszone-mod prv.local --dynamic-update=True --update-policy='grant PRV.LOCAL krb5-self * A; grant PRV.LOCAL krb5-self * AAAA; grant PRV.LOCAL krb5-self * SSHFP; grant "rndc-key" zonesub ANY;'
+
+
+## Grant permission for the reverse zone
+ipa dnszone-mod 199.168.192.in-addr.arpa. --dynamic-update=True --update-policy='grant PRV.LOCAL krb5-self * PTR; grant "rndc-key" zonesub ANY;'
