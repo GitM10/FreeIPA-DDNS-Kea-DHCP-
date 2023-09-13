@@ -55,6 +55,7 @@ dnf install isc-kea-dhcp-ddns.x86_64 -y
 
 
 ## configure /etc/kea/kea-dhcp4.conf
+# check interface parameter and other that may change
 
 ###################################
 
